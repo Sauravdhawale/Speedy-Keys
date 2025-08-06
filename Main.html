@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A keyboard typing game</title>
+
+    <style>
+        body {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        #letterBox {
+            font-size: 4rem;
+            color: blue;
+        }
+
+        button {
+            padding: 8px 26px;
+            border: none;
+            color: #fff;
+            border-radius: 10px;
+            background-color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>A keyboard typing game</h1>
+    <h2 style="font-size: 35px;">press the letter: <span style="font-size: 45px;" id="lettrBox">?</span></h2>
+    <p style="font-size: 28px; font-weight: 500;">score: <span id="score">0</span></p>
+    <p id="getReady" style="font-size: 40px;">Getting Ready <span id="count">...</span></p>
+    <p>Time Left: <span id="timer">10</span> seconds</p>
+
+    <div>
+        <input id="input" type="text" placeholder="Enter Your Name">
+        <button id="butn" onclick="ready()">Start</button>
+    </div>
+    <div>
+        <div id="listItems"
+            style="margin: 0 auto;display: flex; width: 500px; flex-direction: column; justify-content: center; align-items: center;">
+
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 10;
+        let list = [];
+        let inp;
+        let CurrentLetter = "";
+        let btn = document.getElementById("butn")
+
+
+
+        function getRandomLetter() {
+            const letters = "abcdefghijklmnopqrstuvwxyz";
+            const index = Math.floor(Math.random() * letters.length);
+            return letters[index];
+        }
+
+        function showNewLetter() {
+            CurrentLetter = getRandomLetter();
+            document.getElementById("lettrBox").innerText = CurrentLetter.toUpperCase()
+        }
+
+        function updateScore() {
+            score++;
+            document.getElementById("score").innerText = score;
+
+
+        }
+
+        function gameOver() {
+            document.getElementById("lettrBox").innerText = "Game Over";
+            document.removeEventListener("keydown", keyHandler);
+            inp = document.getElementById("input").value;
+            list.push({
+                name: inp,
+                score: score,
+            })
+            document.getElementById("input").value = ""
+
+            const listItem = document.getElementById("listItems");
+            listItem.innerHTML = "<h2>LeadBoard</h2> <ul>";
+            list.forEach(item => {
+                listItem.innerHTML += `<div style="display: flex;justify-content: space-between;width: 300px;background-color:#b54b4b;
+                     color: #fff;padding: 10px; margin-bottom: 10px;"> <li> ${item.name} </li> <span>${item.score}</span> </div>`
+            })
+            listItem.innerHTML += "</ul>"
+
+        }
+
+        function keyHandler(e) {
+            if (e.key.toLowerCase() === CurrentLetter) {
+                updateScore();
+                showNewLetter();
+            }
+        }
+
+        function startTimer() {
+            // currentId++;
+            const timeInterval = setInterval(() => {
+                if (timeLeft !== 0) {
+                    timeLeft--
+                } else {
+                    timeLeft = 10;
+                }
+                document.getElementById("timer").innerText = timeLeft;
+                if (timeLeft === 0) {
+                    clearInterval(timeInterval);
+                    gameOver();
+                    btn.disabled = false;
+                    btn.style.backgroundColor = "green";
+                }
+            }, 1000)
+
+        }
+
+        function ready() {
+            let count = 4;
+            inp = document.getElementById("input").value;
+
+            if (inp.length !== 0) {
+                btn.disabled = true;
+                btn.style.backgroundColor = "grey"
+
+                const myInterval = setInterval(() => {
+                    if (count > 0) {
+                        count--;
+                        document.getElementById("getReady").style.display = "block";
+                        document.getElementById("getReady").style.transition = "ease 0.5s";
+                        document.getElementById("count").innerText = count;
+                    }
+                    else if (count == 0) {
+                        clearInterval(myInterval);
+                        document.getElementById("getReady").style.display = "none";
+                        start();
+                    }
+                }, 1000)
+            }
+            
+            else {
+                alert("Please fill your Name First")
+            }
+
+        }
+
+        function start() {
+            score = 0;
+            startTimer();
+            showNewLetter();
+            document.getElementById("score").innerText = score;
+            document.addEventListener("keydown", keyHandler);
+        }
+
+
+    </script>
+</body>
+
+</html>
